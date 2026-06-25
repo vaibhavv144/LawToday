@@ -1,0 +1,1229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LawToday — India's Legal Knowledge Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ink: #1a1a18;
+    --ink-soft: #4a4a46;
+    --ink-muted: #8a8a84;
+    --parchment: #f9f6f0;
+    --parchment-dark: #f0ebe0;
+    --gold: #b8860b;
+    --gold-light: #d4a017;
+    --gold-pale: #fdf6e3;
+    --rule: #c8c0b0;
+    --white: #ffffff;
+    --sidebar-w: 280px;
+    --header-h: 64px;
+  }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--parchment);
+    color: var(--ink);
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  header {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    height: var(--header-h);
+    background: var(--white);
+    border-bottom: 1px solid var(--rule);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 2rem;
+  }
+
+  .logo {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -0.5px;
+  }
+  .logo span { color: var(--gold); }
+
+  .header-right {
+    display: flex; align-items: center; gap: 1.5rem;
+  }
+
+  .nav-links {
+    display: flex; gap: 1.5rem; list-style: none;
+  }
+  .nav-links a {
+    font-size: 14px; color: var(--ink-soft); text-decoration: none;
+    font-weight: 500; transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--gold); }
+
+  .btn-primary {
+    background: var(--ink);
+    color: var(--white);
+    border: none; cursor: pointer;
+    padding: 8px 18px;
+    border-radius: 6px;
+    font-size: 13px; font-weight: 500;
+    font-family: 'Inter', sans-serif;
+    transition: background 0.2s;
+  }
+  .btn-primary:hover { background: var(--gold); }
+
+  /* ── MENU BUTTON (three dots) ── */
+  .menu-btn {
+    width: 36px; height: 36px;
+    background: none; border: 1px solid var(--rule);
+    border-radius: 8px; cursor: pointer;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 4px;
+    transition: border-color 0.2s;
+  }
+  .menu-btn:hover { border-color: var(--gold); }
+  .menu-btn span {
+    width: 4px; height: 4px;
+    background: var(--ink-soft);
+    border-radius: 50%;
+    transition: background 0.2s;
+  }
+  .menu-btn:hover span { background: var(--gold); }
+
+  /* ── SIDEBAR ── */
+  .sidebar-overlay {
+    display: none; position: fixed; inset: 0; z-index: 200;
+    background: rgba(0,0,0,0.35);
+  }
+  .sidebar-overlay.open { display: block; }
+
+  .sidebar {
+    position: fixed; top: 0; left: -var(--sidebar-w); width: var(--sidebar-w);
+    height: 100vh; z-index: 201;
+    background: var(--white);
+    border-right: 1px solid var(--rule);
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    overflow-y: auto;
+    display: flex; flex-direction: column;
+  }
+  .sidebar.open { transform: translateX(0); }
+
+  .sidebar-header {
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--rule);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .sidebar-title {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 15px; font-weight: 700; color: var(--ink);
+  }
+  .close-btn {
+    background: none; border: none; cursor: pointer;
+    font-size: 20px; color: var(--ink-muted);
+    line-height: 1; padding: 2px 6px;
+  }
+  .close-btn:hover { color: var(--ink); }
+
+  .sidebar-section { padding: 1rem 0; border-bottom: 1px solid var(--rule); }
+  .sidebar-section:last-child { border-bottom: none; }
+  .sidebar-section-label {
+    padding: 0 1.5rem 0.5rem;
+    font-size: 10px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 1.2px;
+    color: var(--gold);
+  }
+  .sidebar-link {
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 1.5rem;
+    font-size: 14px; color: var(--ink-soft);
+    text-decoration: none; cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+    border: none; background: none; width: 100%; text-align: left;
+    font-family: 'Inter', sans-serif;
+  }
+  .sidebar-link:hover { background: var(--gold-pale); color: var(--ink); }
+  .sidebar-link .dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--gold); flex-shrink: 0;
+  }
+  .sidebar-link .badge {
+    margin-left: auto; font-size: 10px;
+    background: var(--parchment-dark); color: var(--ink-muted);
+    padding: 2px 7px; border-radius: 10px;
+  }
+
+  /* ── MAIN ── */
+  main { margin-top: var(--header-h); }
+
+  /* ── HERO ── */
+  .hero {
+    background: var(--white);
+    padding: 80px 2rem 70px;
+    text-align: center;
+    border-bottom: 1px solid var(--rule);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-rule {
+    width: 40px; height: 2px;
+    background: var(--gold);
+    margin: 0 auto 1.5rem;
+  }
+
+  .hero-eyebrow {
+    font-size: 11px; font-weight: 600;
+    letter-spacing: 2px; text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 1.25rem;
+  }
+
+  .hero h1 {
+    font-family: 'Libre Baskerville', serif;
+    font-size: clamp(32px, 5vw, 54px);
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1.2;
+    max-width: 680px;
+    margin: 0 auto 1.5rem;
+    letter-spacing: -1px;
+  }
+
+  .hero h1 em {
+    font-style: italic;
+    color: var(--gold);
+  }
+
+  .hero-sub {
+    font-size: 16px; color: var(--ink-soft);
+    max-width: 500px; margin: 0 auto 2.5rem;
+    line-height: 1.7;
+  }
+
+  .hero-actions {
+    display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;
+  }
+
+  .btn-outline {
+    background: none;
+    border: 1px solid var(--rule);
+    color: var(--ink-soft);
+    padding: 10px 22px; border-radius: 6px;
+    font-size: 14px; font-weight: 500;
+    cursor: pointer; font-family: 'Inter', sans-serif;
+    transition: all 0.2s;
+  }
+  .btn-outline:hover { border-color: var(--gold); color: var(--gold); }
+
+  .btn-gold {
+    background: var(--gold);
+    border: none; color: var(--white);
+    padding: 10px 22px; border-radius: 6px;
+    font-size: 14px; font-weight: 500;
+    cursor: pointer; font-family: 'Inter', sans-serif;
+    transition: background 0.2s;
+  }
+  .btn-gold:hover { background: var(--gold-light); }
+
+  /* ── STATS BAR ── */
+  .stats-bar {
+    background: var(--parchment-dark);
+    border-bottom: 1px solid var(--rule);
+    padding: 1.25rem 2rem;
+    display: flex; gap: 3rem; justify-content: center; flex-wrap: wrap;
+  }
+  .stat-item { text-align: center; }
+  .stat-number {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 24px; font-weight: 700;
+    color: var(--ink);
+    display: block;
+  }
+  .stat-label {
+    font-size: 12px; color: var(--ink-muted);
+    text-transform: uppercase; letter-spacing: 1px;
+  }
+
+  /* ── WHAT IS ── */
+  .section {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 4rem 2rem;
+  }
+
+  .section-label {
+    font-size: 11px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 2px;
+    color: var(--gold); margin-bottom: 1rem;
+  }
+  .section h2 {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 28px; font-weight: 700;
+    color: var(--ink); margin-bottom: 1rem;
+    line-height: 1.3;
+  }
+  .section p {
+    font-size: 16px; line-height: 1.8;
+    color: var(--ink-soft); margin-bottom: 1rem;
+  }
+
+  /* ── FEATURE CARDS ── */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.25rem;
+    margin-top: 2.5rem;
+  }
+
+  .feature-card {
+    background: var(--white);
+    border: 1px solid var(--rule);
+    border-radius: 10px;
+    padding: 1.5rem;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+  .feature-card:hover {
+    border-color: var(--gold);
+    transform: translateY(-2px);
+  }
+
+  .card-icon {
+    width: 40px; height: 40px;
+    background: var(--gold-pale);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 1rem;
+    font-size: 18px;
+  }
+
+  .feature-card h3 {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 16px; font-weight: 700;
+    color: var(--ink); margin-bottom: 0.5rem;
+  }
+  .feature-card p {
+    font-size: 13px; color: var(--ink-muted);
+    line-height: 1.6; margin: 0;
+  }
+
+  /* ── LAW PREVIEW CARDS ── */
+  .divider {
+    border: none; border-top: 1px solid var(--rule);
+    max-width: 900px; margin: 0 auto;
+  }
+
+  .laws-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1rem;
+    margin-top: 2rem;
+  }
+
+  .law-card {
+    background: var(--white);
+    border: 1px solid var(--rule);
+    border-radius: 10px;
+    padding: 1.25rem 1.5rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+  }
+  .law-card:hover {
+    border-color: var(--gold);
+    background: var(--gold-pale);
+  }
+  .law-card-tag {
+    font-size: 10px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 1.5px;
+    color: var(--gold); margin-bottom: 0.5rem;
+    display: block;
+  }
+  .law-card h3 {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 15px; font-weight: 700;
+    color: var(--ink); margin-bottom: 0.4rem;
+  }
+  .law-card p {
+    font-size: 12px; color: var(--ink-muted);
+    line-height: 1.5; margin: 0;
+  }
+  .law-card .arrow {
+    position: absolute; top: 1.25rem; right: 1.25rem;
+    color: var(--gold); font-size: 16px; opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .law-card:hover .arrow { opacity: 1; }
+
+  .tag-new {
+    display: inline-block;
+    background: #e8f5e9; color: #2e7d32;
+    font-size: 9px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 1px;
+    padding: 2px 7px; border-radius: 4px;
+    margin-left: 8px; vertical-align: middle;
+  }
+  .tag-updated {
+    display: inline-block;
+    background: #fff3e0; color: #e65100;
+    font-size: 9px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 1px;
+    padding: 2px 7px; border-radius: 4px;
+    margin-left: 8px; vertical-align: middle;
+  }
+
+  /* ── CONTENT PAGE (shown on law click) ── */
+  .content-page {
+    display: none;
+    position: fixed; inset: 0; z-index: 300;
+    background: var(--parchment);
+    overflow-y: auto;
+    padding-top: var(--header-h);
+  }
+  .content-page.open { display: block; }
+
+  .content-header {
+    background: var(--white);
+    border-bottom: 1px solid var(--rule);
+    padding: 2rem;
+    max-width: 760px; margin: 0 auto;
+  }
+
+  .back-btn {
+    background: none; border: none; cursor: pointer;
+    font-size: 13px; color: var(--gold);
+    font-family: 'Inter', sans-serif;
+    display: flex; align-items: center; gap: 6px;
+    margin-bottom: 1.5rem; padding: 0;
+  }
+  .back-btn:hover { text-decoration: underline; }
+
+  .content-tag {
+    font-size: 11px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 2px;
+    color: var(--gold); margin-bottom: 0.75rem;
+  }
+
+  .content-title {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 32px; font-weight: 700;
+    color: var(--ink); margin-bottom: 0.5rem;
+    line-height: 1.2;
+  }
+
+  .content-meta {
+    font-size: 13px; color: var(--ink-muted);
+    display: flex; gap: 1.5rem; flex-wrap: wrap;
+    margin-top: 1rem;
+  }
+
+  .content-body {
+    max-width: 760px; margin: 0 auto;
+    padding: 2.5rem 2rem;
+  }
+
+  .preamble-box {
+    background: var(--gold-pale);
+    border-left: 3px solid var(--gold);
+    padding: 1.25rem 1.5rem;
+    border-radius: 0 8px 8px 0;
+    margin-bottom: 2rem;
+    font-family: 'Libre Baskerville', serif;
+    font-size: 14px;
+    font-style: italic;
+    color: var(--ink-soft);
+    line-height: 1.8;
+  }
+
+  .content-body h3 {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 20px; font-weight: 700;
+    color: var(--ink); margin: 2rem 0 1rem;
+  }
+  .content-body p {
+    font-size: 15px; line-height: 1.85;
+    color: var(--ink-soft); margin-bottom: 1rem;
+  }
+
+  .content-tabs {
+    display: flex; gap: 0; border-bottom: 2px solid var(--rule);
+    margin-bottom: 2rem; overflow-x: auto;
+  }
+  .tab-btn {
+    background: none; border: none; cursor: pointer;
+    padding: 10px 18px; font-size: 13px;
+    font-family: 'Inter', sans-serif;
+    color: var(--ink-muted); font-weight: 500;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px; transition: color 0.2s;
+    white-space: nowrap;
+  }
+  .tab-btn.active { color: var(--gold); border-bottom-color: var(--gold); }
+  .tab-btn:hover { color: var(--ink); }
+
+  .tab-pane { display: none; }
+  .tab-pane.active { display: block; }
+
+  .landmark-card {
+    background: var(--white);
+    border: 1px solid var(--rule);
+    border-radius: 8px;
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+  }
+  .landmark-card h4 {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 15px; font-weight: 700;
+    color: var(--ink); margin-bottom: 0.4rem;
+  }
+  .landmark-card .case-meta {
+    font-size: 12px; color: var(--gold);
+    font-weight: 500; margin-bottom: 0.6rem;
+  }
+  .landmark-card p { font-size: 13px; color: var(--ink-soft); line-height: 1.6; margin: 0; }
+
+  .mcq-card {
+    background: var(--white);
+    border: 1px solid var(--rule);
+    border-radius: 8px;
+    padding: 1.25rem;
+    margin-bottom: 1.25rem;
+  }
+  .mcq-card .q-text {
+    font-size: 14px; font-weight: 500;
+    color: var(--ink); margin-bottom: 1rem;
+  }
+  .mcq-option {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 8px 12px; border-radius: 6px;
+    border: 1px solid var(--rule);
+    margin-bottom: 6px; cursor: pointer;
+    font-size: 13px; color: var(--ink-soft);
+    transition: all 0.15s;
+  }
+  .mcq-option:hover { border-color: var(--gold); color: var(--ink); }
+  .mcq-option.correct { background: #e8f5e9; border-color: #4caf50; color: #1b5e20; }
+  .mcq-option.wrong { background: #ffebee; border-color: #ef9a9a; color: #b71c1c; }
+  .mcq-letter {
+    font-weight: 600; min-width: 16px;
+  }
+
+  /* ── UPDATES STRIP ── */
+  .updates-section {
+    background: var(--ink);
+    padding: 3rem 2rem;
+  }
+  .updates-inner {
+    max-width: 900px; margin: 0 auto;
+  }
+  .updates-inner .section-label { color: var(--gold-light); }
+  .updates-inner h2 {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 24px; font-weight: 700;
+    color: var(--white); margin-bottom: 1.5rem;
+  }
+
+  .update-item {
+    display: flex; gap: 1.25rem;
+    padding: 1rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+  .update-item:last-child { border-bottom: none; }
+  .update-date {
+    font-size: 12px; color: var(--gold-light);
+    white-space: nowrap; min-width: 90px;
+    padding-top: 2px;
+  }
+  .update-content h4 {
+    font-size: 14px; font-weight: 500; color: var(--white);
+    margin-bottom: 4px;
+  }
+  .update-content p { font-size: 13px; color: rgba(255,255,255,0.5); margin: 0; }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--white);
+    border-top: 1px solid var(--rule);
+    padding: 3rem 2rem;
+  }
+  .footer-inner {
+    max-width: 900px; margin: 0 auto;
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1.5fr;
+    gap: 2rem;
+  }
+  .footer-brand .logo { font-size: 20px; }
+  .footer-brand p {
+    font-size: 13px; color: var(--ink-muted);
+    line-height: 1.7; margin-top: 0.75rem;
+    max-width: 220px;
+  }
+  .footer-col h4 {
+    font-size: 12px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 1.2px;
+    color: var(--ink-muted); margin-bottom: 1rem;
+  }
+  .footer-col a {
+    display: block; font-size: 13px;
+    color: var(--ink-soft); text-decoration: none;
+    margin-bottom: 0.5rem; transition: color 0.2s;
+  }
+  .footer-col a:hover { color: var(--gold); }
+
+  .footer-contact { }
+  .footer-contact h4 {
+    font-size: 12px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 1.2px;
+    color: var(--ink-muted); margin-bottom: 1rem;
+  }
+  .contact-row {
+    display: flex; flex-direction: column; gap: 0.5rem;
+  }
+  .contact-input {
+    width: 100%;
+    border: 1px solid var(--rule); border-radius: 6px;
+    padding: 8px 12px; font-size: 13px;
+    font-family: 'Inter', sans-serif;
+    color: var(--ink); background: var(--parchment);
+    outline: none; transition: border-color 0.2s;
+  }
+  .contact-input:focus { border-color: var(--gold); }
+  .contact-textarea {
+    resize: vertical; min-height: 70px;
+  }
+  .btn-send {
+    background: var(--gold); color: var(--white);
+    border: none; border-radius: 6px;
+    padding: 8px 16px; font-size: 13px;
+    font-family: 'Inter', sans-serif; font-weight: 500;
+    cursor: pointer; transition: background 0.2s; width: 100%;
+  }
+  .btn-send:hover { background: var(--gold-light); }
+
+  .footer-bottom {
+    max-width: 900px; margin: 2rem auto 0;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--rule);
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 0.5rem;
+  }
+  .footer-bottom p { font-size: 12px; color: var(--ink-muted); }
+
+  /* ── AI BADGE ── */
+  .ai-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--gold-pale); border: 1px solid #e8d89a;
+    padding: 4px 12px; border-radius: 20px;
+    font-size: 12px; font-weight: 500; color: var(--gold);
+    margin-bottom: 2rem;
+  }
+  .ai-badge-dot {
+    width: 6px; height: 6px;
+    background: var(--gold); border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 700px) {
+    .footer-inner { grid-template-columns: 1fr 1fr; }
+    .hero h1 { font-size: 28px; }
+    .stats-bar { gap: 1.5rem; }
+  }
+  @media (max-width: 480px) {
+    .footer-inner { grid-template-columns: 1fr; }
+    .nav-links { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── HEADER ── -->
+<header>
+  <div style="display:flex; align-items:center; gap:1rem;">
+    <button class="menu-btn" onclick="toggleSidebar()" aria-label="Browse laws">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="logo">Law<span>Today</span></div>
+  </div>
+  <nav>
+    <ul class="nav-links">
+      <li><a href="#" onclick="showSection('home')">Home</a></li>
+      <li><a href="#" onclick="showSection('updates')">Recent Updates</a></li>
+      <li><a href="#" onclick="document.getElementById('footer').scrollIntoView({behavior:'smooth'})">Contact</a></li>
+    </ul>
+  </nav>
+  <div class="header-right">
+    <button class="btn-primary" onclick="toggleSidebar()">Explore Laws</button>
+  </div>
+</header>
+
+<!-- ── SIDEBAR ── -->
+<div class="sidebar-overlay" id="overlay" onclick="toggleSidebar()"></div>
+<aside class="sidebar" id="sidebar" role="navigation" aria-label="Law categories">
+  <div class="sidebar-header">
+    <span class="sidebar-title">Browse Laws</span>
+    <button class="close-btn" onclick="toggleSidebar()">×</button>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Constitutional</div>
+    <button class="sidebar-link" onclick="openLaw('constitution')">
+      <span class="dot"></span> Constitution of India
+    </button>
+    <button class="sidebar-link" onclick="openLaw('cpc')">
+      <span class="dot"></span> Civil Procedure Code
+    </button>
+    <button class="sidebar-link" onclick="openLaw('coa')">
+      <span class="dot"></span> Court of Arbitration
+    </button>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Criminal Laws</div>
+    <button class="sidebar-link" onclick="openLaw('bns')">
+      <span class="dot"></span> BNS 2023 <span class="badge">New</span>
+    </button>
+    <button class="sidebar-link" onclick="openLaw('bnss')">
+      <span class="dot"></span> BNSS 2023 <span class="badge">New</span>
+    </button>
+    <button class="sidebar-link" onclick="openLaw('bsa')">
+      <span class="dot"></span> BSA 2023 <span class="badge">New</span>
+    </button>
+    <button class="sidebar-link" onclick="openLaw('ipc')">
+      <span class="dot"></span> IPC 1860 (Historical)
+    </button>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Commercial Laws</div>
+    <button class="sidebar-link" onclick="openLaw('companies')">
+      <span class="dot"></span> Companies Act 2013
+    </button>
+    <button class="sidebar-link" onclick="openLaw('ibc')">
+      <span class="dot"></span> IBC 2016
+    </button>
+    <button class="sidebar-link" onclick="openLaw('soga')">
+      <span class="dot"></span> Sale of Goods Act 1930
+    </button>
+    <button class="sidebar-link" onclick="openLaw('partnership')">
+      <span class="dot"></span> Indian Partnership Act 1932
+    </button>
+    <button class="sidebar-link" onclick="openLaw('llp')">
+      <span class="dot"></span> LLP Act 2008
+    </button>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Property & Contracts</div>
+    <button class="sidebar-link" onclick="openLaw('contract')">
+      <span class="dot"></span> Indian Contract Act 1872
+    </button>
+    <button class="sidebar-link" onclick="openLaw('tpa')">
+      <span class="dot"></span> Transfer of Property Act 1882
+    </button>
+    <button class="sidebar-link" onclick="openLaw('easements')">
+      <span class="dot"></span> Easements Act 1882
+    </button>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Family & Personal Laws</div>
+    <button class="sidebar-link" onclick="openLaw('hma')">
+      <span class="dot"></span> Hindu Marriage Act 1955
+    </button>
+    <button class="sidebar-link" onclick="openLaw('hsa')">
+      <span class="dot"></span> Hindu Succession Act 1956
+    </button>
+    <button class="sidebar-link" onclick="openLaw('mma')">
+      <span class="dot"></span> Muslim Marriage Act
+    </button>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Evidence & Procedure</div>
+    <button class="sidebar-link" onclick="openLaw('evidence')">
+      <span class="dot"></span> Evidence Act / BSA 2023
+    </button>
+    <button class="sidebar-link" onclick="openLaw('limitation')">
+      <span class="dot"></span> Limitation Act 1963
+    </button>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">IPR & Technology</div>
+    <button class="sidebar-link" onclick="openLaw('copyright')">
+      <span class="dot"></span> Copyright Act 1957
+    </button>
+    <button class="sidebar-link" onclick="openLaw('patents')">
+      <span class="dot"></span> Patents Act 1970
+    </button>
+    <button class="sidebar-link" onclick="openLaw('it')">
+      <span class="dot"></span> IT Act 2000
+    </button>
+    <button class="sidebar-link" onclick="openLaw('dpdp')">
+      <span class="dot"></span> DPDP Act 2023 <span class="badge">New</span>
+    </button>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Environment & Labour</div>
+    <button class="sidebar-link" onclick="openLaw('environment')">
+      <span class="dot"></span> Environment Protection Act 1986
+    </button>
+    <button class="sidebar-link" onclick="openLaw('labour')">
+      <span class="dot"></span> Labour Codes 2019–2020
+    </button>
+  </div>
+</aside>
+
+<!-- ── HOME PAGE ── -->
+<div id="home-page">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-rule"></div>
+    <div class="hero-eyebrow">India's legal knowledge hub</div>
+    <h1>Every law. <em>Decoded</em>.<br>One place.</h1>
+    <p class="hero-sub">From the Constitution to the DPDP Act — bare acts explained in plain language, landmark cases distilled, and the latest Supreme Court updates, all in one place built for law students.</p>
+    <div class="hero-actions">
+      <button class="btn-gold" onclick="toggleSidebar()">Browse Laws →</button>
+      <button class="btn-outline" onclick="openLaw('constitution')">Start with the Constitution</button>
+    </div>
+  </section>
+
+  <!-- STATS BAR -->
+  <div class="stats-bar">
+    <div class="stat-item">
+      <span class="stat-number">50+</span>
+      <span class="stat-label">Laws covered</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-number">300+</span>
+      <span class="stat-label">Landmark cases</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-number">1000+</span>
+      <span class="stat-label">MCQs & PYQs</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-number">Weekly</span>
+      <span class="stat-label">SC/HC updates</span>
+    </div>
+  </div>
+
+  <!-- WHAT IS THIS -->
+  <section class="section">
+    <div class="section-label">About LawToday</div>
+    <h2>Built for law students who want more than a textbook</h2>
+    <p>LawToday covers what most textbooks skip — SOGA, Partnership Act, IBC, DPDP Act, Labour Codes — along with the laws you study daily. Every Act is introduced through its own preamble and the story behind why it was made, so you understand not just what the law says, but why it exists.</p>
+    <p>All content is AI-assisted and expert-reviewed before publishing, ensuring accuracy and reliability you can depend on for exams, internships, and practice.</p>
+
+    <div class="cards-grid">
+      <div class="feature-card">
+        <div class="card-icon">📜</div>
+        <h3>Bare Acts, decoded</h3>
+        <p>Every section in plain language — preamble, objective, key provisions, and exceptions explained without legalese.</p>
+      </div>
+      <div class="feature-card">
+        <div class="card-icon">⚖️</div>
+        <h3>Landmark cases</h3>
+        <p>Curated case summaries with facts, held, and significance — from foundational judgments to 2025 Supreme Court decisions.</p>
+      </div>
+      <div class="feature-card">
+        <div class="card-icon">🔔</div>
+        <h3>Recent updates</h3>
+        <p>Supreme Court and High Court judgments, new legislation, amendments — tracked and explained weekly.</p>
+      </div>
+      <div class="feature-card">
+        <div class="card-icon">📝</div>
+        <h3>MCQs & PYQs</h3>
+        <p>Topic-wise practice questions with instant feedback. Past-year questions tagged by exam — NET, CLAT, judiciary, bar exams.</p>
+      </div>
+      <div class="feature-card">
+        <div class="card-icon">🔍</div>
+        <h3>The understudied laws</h3>
+        <p>SOGA, Partnership, IBC, LLP, Companies Act — the laws that appear in exams but rarely get classroom attention.</p>
+      </div>
+      <div class="feature-card">
+        <div class="card-icon">✅</div>
+        <h3>Expert-reviewed content</h3>
+        <p>AI-assisted drafting, reviewed by practising advocates before publication. No unverified content goes live.</p>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- LAW CARDS PREVIEW -->
+  <section class="section">
+    <div class="section-label">Quick access</div>
+    <h2>Explore by law</h2>
+    <p>Click any card to open the full section — introduction, key provisions, landmark cases, and practice questions.</p>
+
+    <div class="laws-grid">
+      <div class="law-card" onclick="openLaw('constitution')">
+        <span class="law-card-tag">Constitutional</span>
+        <h3>Constitution of India <span class="tag-updated">Updated</span></h3>
+        <p>Drafted by the Constituent Assembly in 2 years, 11 months & 17 days. In force since Jan 26, 1950.</p>
+        <span class="arrow">→</span>
+      </div>
+      <div class="law-card" onclick="openLaw('bns')">
+        <span class="law-card-tag">Criminal</span>
+        <h3>Bharatiya Nyaya Sanhita 2023 <span class="tag-new">New</span></h3>
+        <p>Replaces IPC 1860. 358 sections. Introduces community service as punishment, mob lynching, terrorism provisions.</p>
+        <span class="arrow">→</span>
+      </div>
+      <div class="law-card" onclick="openLaw('ibc')">
+        <span class="law-card-tag">Commercial</span>
+        <h3>Insolvency & Bankruptcy Code 2016</h3>
+        <p>A landmark consolidation of India's insolvency framework. Introduced the NCLT, IRP, and resolution plans.</p>
+        <span class="arrow">→</span>
+      </div>
+      <div class="law-card" onclick="openLaw('soga')">
+        <span class="law-card-tag">Commercial</span>
+        <h3>Sale of Goods Act 1930</h3>
+        <p>Governs contracts for sale of movable property. Codifies caveat emptor, implied conditions, and warranties.</p>
+        <span class="arrow">→</span>
+      </div>
+      <div class="law-card" onclick="openLaw('partnership')">
+        <span class="law-card-tag">Commercial</span>
+        <h3>Indian Partnership Act 1932</h3>
+        <p>Defines partnership, mutual agency, rights of partners, dissolution, and reconstitution of firms.</p>
+        <span class="arrow">→</span>
+      </div>
+      <div class="law-card" onclick="openLaw('dpdp')">
+        <span class="law-card-tag">Technology</span>
+        <h3>DPDP Act 2023 <span class="tag-new">New</span></h3>
+        <p>India's first dedicated data protection law. Defines data principals, data fiduciaries, and consent mechanisms.</p>
+        <span class="arrow">→</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- RECENT UPDATES -->
+  <div class="updates-section" id="updates">
+    <div class="updates-inner">
+      <div class="section-label">Recent updates</div>
+      <h2>Supreme Court & High Court — June 2026</h2>
+      <div class="update-item">
+        <div class="update-date">Jun 20, 2026</div>
+        <div class="update-content">
+          <h4>SC on pre-packaged insolvency — CIRP timelines revisited</h4>
+          <p>The Court clarified the 90-day resolution window under Section 54C of IBC in a three-judge bench ruling.</p>
+        </div>
+      </div>
+      <div class="update-item">
+        <div class="update-date">Jun 17, 2026</div>
+        <div class="update-content">
+          <h4>Delhi HC on data fiduciary obligations under DPDP Act</h4>
+          <p>First significant High Court interpretation of "significant data fiduciary" thresholds under the 2023 Act.</p>
+        </div>
+      </div>
+      <div class="update-item">
+        <div class="update-date">Jun 12, 2026</div>
+        <div class="update-content">
+          <h4>SC upholds BNS community service sentencing for first-time offenders</h4>
+          <p>Landmark decision operationalising Section 4(f) of BNS, 2023 on community service as an alternative punishment.</p>
+        </div>
+      </div>
+      <div class="update-item">
+        <div class="update-date">Jun 05, 2026</div>
+        <div class="update-content">
+          <h4>Constitution Bench on sub-classification of SC/ST reservations</h4>
+          <p>Follow-up hearing post the 7-judge bench judgment in State of Punjab v. Davinder Singh, 2024.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer id="footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="logo">Law<span>Today</span></div>
+        <p>India's one-stop legal knowledge hub for law students, advocates, and anyone who wants to understand the law.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Laws</h4>
+        <a href="#" onclick="openLaw('constitution')">Constitution</a>
+        <a href="#" onclick="openLaw('bns')">BNS 2023</a>
+        <a href="#" onclick="openLaw('ibc')">IBC 2016</a>
+        <a href="#" onclick="openLaw('soga')">SOGA 1930</a>
+        <a href="#" onclick="openLaw('dpdp')">DPDP Act</a>
+        <a href="#" onclick="toggleSidebar()">All laws →</a>
+      </div>
+      <div class="footer-col">
+        <h4>Platform</h4>
+        <a href="#">About us</a>
+        <a href="#">Editorial policy</a>
+        <a href="#">Contribute</a>
+        <a href="#">Collaborate</a>
+        <a href="#">Feedback</a>
+      </div>
+      <div class="footer-contact">
+        <h4>Contact / Feedback / Collaborate</h4>
+        <div class="contact-row">
+          <input class="contact-input" type="text" placeholder="Your name">
+          <input class="contact-input" type="email" placeholder="Email address">
+          <textarea class="contact-input contact-textarea" placeholder="Message, feedback, or collaboration idea..."></textarea>
+          <button class="btn-send" onclick="alert('Thank you! We\'ll get back to you soon.')">Send message</button>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2026 LawToday.com — Content is AI-assisted and expert-reviewed. Not legal advice.</p>
+      <p>Built for India's law students 🇮🇳</p>
+    </div>
+  </footer>
+</div>
+
+<!-- ── CONTENT PAGE (individual law) ── -->
+<div class="content-page" id="content-page">
+  <div class="content-header">
+    <button class="back-btn" onclick="closeLaw()">← Back to home</button>
+    <div class="content-tag" id="content-tag">Constitutional Law</div>
+    <div class="content-title" id="content-title">Constitution of India</div>
+    <div class="content-meta" id="content-meta">
+      <span>📅 In force: Jan 26, 1950</span>
+      <span>📖 395 Articles</span>
+      <span>🔖 22 Parts</span>
+    </div>
+  </div>
+  <div class="content-body">
+    <div class="ai-badge">
+      <span class="ai-badge-dot"></span>
+      AI-assisted · Expert-reviewed before publication
+    </div>
+    <div class="content-tabs">
+      <button class="tab-btn active" onclick="switchTab('overview', this)">Overview</button>
+      <button class="tab-btn" onclick="switchTab('provisions', this)">Key Provisions</button>
+      <button class="tab-btn" onclick="switchTab('cases', this)">Landmark Cases</button>
+      <button class="tab-btn" onclick="switchTab('mcq', this)">Practice MCQs</button>
+    </div>
+
+    <div class="tab-pane active" id="tab-overview">
+      <div class="preamble-box" id="preamble-text">
+        "WE, THE PEOPLE OF INDIA, having solemnly resolved to constitute India into a SOVEREIGN SOCIALIST SECULAR DEMOCRATIC REPUBLIC and to secure to all its citizens — Justice, Liberty, Equality — and to promote among them all Fraternity..."
+      </div>
+      <div id="overview-content">
+        <h3>What is it, and why was it made?</h3>
+        <p>The Constitution of India is the supreme law of the land — the foundational document from which all legislative, executive, and judicial authority in India flows. It was drafted by the Constituent Assembly of India, which first met on December 9, 1946, and completed its work on November 26, 1949. It took <strong>2 years, 11 months, and 17 days</strong> to draft.</p>
+        <p>The Constitution came into force on January 26, 1950 — a date chosen deliberately to mark the anniversary of the 1930 Purna Swaraj declaration. Dr. B.R. Ambedkar served as Chairman of the Drafting Committee, and the document drew from constitutions of the USA, UK, Ireland, Canada, Australia, Germany, and the USSR.</p>
+        <h3>Scope and structure</h3>
+        <p>Originally consisting of 395 Articles, 22 Parts, and 8 Schedules, the Constitution has since been amended 106 times (as of 2024). It establishes India as a sovereign, socialist, secular, democratic republic with a parliamentary system of government. The Fundamental Rights (Part III), Directive Principles (Part IV), and Fundamental Duties (Part IVA) form its philosophical core.</p>
+        <h3>Why it matters for law students</h3>
+        <p>Every area of law in India — criminal, civil, administrative, environmental, labour — derives its legitimacy from the Constitution. Articles 12–35 (Fundamental Rights) provide the basis for most PILs and writ petitions. Articles 32 and 226 are the two most litigated provisions in constitutional practice.</p>
+      </div>
+    </div>
+
+    <div class="tab-pane" id="tab-provisions">
+      <h3>Key provisions at a glance</h3>
+      <div id="provisions-content">
+        <div class="landmark-card">
+          <h4>Article 12–35 — Fundamental Rights</h4>
+          <div class="case-meta">Part III</div>
+          <p>Six fundamental rights: equality (14–18), freedom (19–22), against exploitation (23–24), religion (25–28), culture and education (29–30), and constitutional remedies (32). Article 32 is itself a fundamental right — the right to move the Supreme Court.</p>
+        </div>
+        <div class="landmark-card">
+          <h4>Article 36–51 — Directive Principles of State Policy</h4>
+          <div class="case-meta">Part IV</div>
+          <p>Non-justiciable guidelines for state governance. Includes equal pay (Article 39(d)), free legal aid (39A), uniform civil code (44), living wage (43), and protection of environment (48A). The relationship between FRs and DPSPs was settled in Kesavananda Bharati (1973) and Minerva Mills (1980).</p>
+        </div>
+        <div class="landmark-card">
+          <h4>Articles 52–151 — The Union Government</h4>
+          <div class="case-meta">Parts V & VI</div>
+          <p>Establishes the President, Vice-President, Council of Ministers, Parliament (Lok Sabha + Rajya Sabha), and the Supreme Court. Article 74(1) — the Council of Ministers shall aid and advise the President — is the foundation of parliamentary democracy.</p>
+        </div>
+        <div class="landmark-card">
+          <h4>Articles 352–360 — Emergency Provisions</h4>
+          <div class="case-meta">Part XVIII</div>
+          <p>Three types: National Emergency (352), President's Rule (356), and Financial Emergency (360). The 44th Amendment (1978) made Article 352 proclamation subject to cabinet approval and parliamentary ratification within one month.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-pane" id="tab-cases">
+      <h3>Landmark cases</h3>
+      <div id="cases-content">
+        <div class="landmark-card">
+          <h4>Kesavananda Bharati v. State of Kerala (1973)</h4>
+          <div class="case-meta">AIR 1973 SC 1461 · 13-Judge Bench</div>
+          <p>Established the Basic Structure doctrine — Parliament cannot amend the Constitution so as to destroy its essential features. The basic structure includes supremacy of the Constitution, republican and democratic form of government, separation of powers, federalism, and judicial review.</p>
+        </div>
+        <div class="landmark-card">
+          <h4>Maneka Gandhi v. Union of India (1978)</h4>
+          <div class="case-meta">AIR 1978 SC 597</div>
+          <p>Expanded Article 21's "procedure established by law" to mean "just, fair, and reasonable procedure," incorporating the American concept of due process. This single judgment transformed Article 21 into the most expansive right in the Constitution.</p>
+        </div>
+        <div class="landmark-card">
+          <h4>S.R. Bommai v. Union of India (1994)</h4>
+          <div class="case-meta">AIR 1994 SC 1918 · 9-Judge Bench</div>
+          <p>Subjected President's Rule under Article 356 to judicial review. Held that secularism is a basic feature of the Constitution and that the floor of the state legislature is the only proper forum to test a government's majority.</p>
+        </div>
+        <div class="landmark-card">
+          <h4>Justice K.S. Puttaswamy v. Union of India (2017)</h4>
+          <div class="case-meta">(2017) 10 SCC 1 · 9-Judge Bench</div>
+          <p>Unanimously held that privacy is a fundamental right under Article 21. Overruled M.P. Sharma (1954) and Kharak Singh (1963). The three-fold test (legality, legitimate aim, proportionality) now governs all State interference with privacy.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-pane" id="tab-mcq">
+      <h3>Practice questions</h3>
+      <div id="mcq-content">
+        <div class="mcq-card" id="mcq1">
+          <div class="q-text">1. The Constituent Assembly completed drafting the Constitution on:</div>
+          <div class="mcq-option" onclick="checkAnswer(this,'mcq1',false)"><span class="mcq-letter">A</span> January 26, 1950</div>
+          <div class="mcq-option" onclick="checkAnswer(this,'mcq1',true)"><span class="mcq-letter">B</span> November 26, 1949</div>
+          <div class="mcq-option" onclick="checkAnswer(this,'mcq1',false)"><span class="mcq-letter">C</span> August 15, 1947</div>
+          <div class="mcq-option" onclick="checkAnswer(this,'mcq1',false)"><span class="mcq-letter">D</span> December 9, 1946</div>
+        </div>
+        <div class="mcq-card" id="mcq2">
+          <div class="q-text">2. The Basic Structure doctrine was propounded in:</div>
+          <div class="mcq-option" onclick="checkAnswer(this,'mcq2',false)"><span class="mcq-letter">A</span> Golak Nath v. State of Punjab (1967)</div>
+          <div class="mcq-option" onclick="checkAnswer(this,'mcq2',false)"><span class="mcq-letter">B</span> Shankari Prasad v. Union of India (1951)</div>
+          <div class="mcq-option" onclick="checkAnswer(this,'mcq2',true)"><span class="mcq-letter">C</span> Kesavananda Bharati v. State of Kerala (1973)</div>
+          <div class="mcq-option" onclick="checkAnswer(this,'mcq2',false)"><span class="mcq-letter">D</span> Minerva Mills v. Union of India (1980)</div>
+        </div>
+        <div class="mcq-card" id="mcq3">
+          <div class="q-text">3. Which Article gives the Supreme Court original jurisdiction for enforcement of Fundamental Rights?</div>
+          <div class="mcq-option" onclick="checkAnswer(this,'mcq3',false)"><span class="mcq-letter">A</span> Article 226</div>
+          <div class="mcq-option" onclick="checkAnswer(this,'mcq3',true)"><span class="mcq-letter">B</span> Article 32</div>
+          <div class="mcq-option" onclick="checkAnswer(this,'mcq3',false)"><span class="mcq-letter">C</span> Article 136</div>
+          <div class="mcq-option" onclick="checkAnswer(this,'mcq3',false)"><span class="mcq-letter">D</span> Article 142</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const lawData = {
+  constitution: {
+    tag: "Constitutional Law",
+    title: "Constitution of India",
+    meta: ["📅 In force: Jan 26, 1950", "📖 395 Articles (originally)", "🔖 22 Parts · 8 Schedules"],
+    preamble: `"WE, THE PEOPLE OF INDIA, having solemnly resolved to constitute India into a SOVEREIGN SOCIALIST SECULAR DEMOCRATIC REPUBLIC and to secure to all its citizens — Justice, social, economic and political; Liberty of thought, expression, belief, faith and worship; Equality of status and of opportunity; and to promote among them all Fraternity assuring the dignity of the individual and the unity and integrity of the Nation..."`,
+    overview: `<h3>What is it, and why was it made?</h3>
+<p>The Constitution of India is the supreme law of the land — the foundational document from which all legislative, executive, and judicial authority in India flows. It was drafted by the Constituent Assembly of India, which first met on December 9, 1946, and completed its work on November 26, 1949. It took <strong>2 years, 11 months, and 17 days</strong> to draft.</p>
+<p>The Constitution came into force on January 26, 1950 — a date chosen deliberately to mark the anniversary of the 1930 Purna Swaraj declaration. Dr. B.R. Ambedkar served as Chairman of the Drafting Committee.</p>
+<h3>Why it matters for law students</h3>
+<p>Every area of law in India derives its legitimacy from the Constitution. Articles 12–35 (Fundamental Rights) provide the basis for most PILs and writ petitions. Articles 32 and 226 are the two most litigated provisions in constitutional practice.</p>`
+  },
+  bns: {
+    tag: "Criminal Law",
+    title: "Bharatiya Nyaya Sanhita, 2023",
+    meta: ["📅 In force: July 1, 2024", "📖 358 Sections", "🔖 Replaces IPC 1860"],
+    preamble: `"An Act to consolidate and amend the provisions relating to offences and to provide for matters connected therewith or incidental thereto, in keeping with the contemporary needs of society..."`,
+    overview: `<h3>What is it, and why was it made?</h3>
+<p>The Bharatiya Nyaya Sanhita (BNS), 2023 is the successor to the Indian Penal Code (IPC), 1860. It came into force on July 1, 2024, along with the Bharatiya Nagarik Suraksha Sanhita (BNSS) replacing CrPC, and the Bharatiya Sakshya Adhiniyam (BSA) replacing the Evidence Act.</p>
+<p>The stated objective was to decolonise criminal law, move from a punishment-centric to a justice-centric framework, and incorporate contemporary crimes like organised crime and terrorism into a unified code.</p>
+<h3>Key additions over IPC</h3>
+<p>BNS introduces several new provisions: <strong>Section 103</strong> (mob lynching — death penalty if death results), <strong>Section 111</strong> (organised crime), <strong>Section 113</strong> (terrorism), <strong>Section 304</strong> (snatching as a distinct offence), and <strong>community service</strong> as a new form of punishment under Section 4(f). Sedition (Section 124A IPC) has been abrogated; Section 152 BNS covers acts endangering sovereignty.</p>`
+  },
+  soga: {
+    tag: "Commercial Law",
+    title: "Sale of Goods Act, 1930",
+    meta: ["📅 In force: July 1, 1930", "📖 66 Sections", "🔖 Governs sale of movable property"],
+    preamble: `"An Act to define and amend the law relating to the sale of goods... The Act is largely based on the Transfer of Property Act, 1882 and the Indian Contract Act, 1872, carved out to provide a separate, consolidated framework for transactions in goods."`,
+    overview: `<h3>What is it, and why was it made?</h3>
+<p>The Sale of Goods Act, 1930 governs contracts for the sale of movable goods in India. Prior to 1930, the law of sale of goods was contained in Chapter VII of the Indian Contract Act, 1872 (Sections 76–123). These provisions were repealed and re-enacted as a separate statute to provide greater clarity and detail.</p>
+<p>The Act applies to contracts where the seller transfers or agrees to transfer the property in goods to the buyer for a price. It does not apply to immovable property (governed by TPA), actionable claims, or money.</p>
+<h3>Most important concepts</h3>
+<p><strong>Caveat Emptor</strong> (Section 16) — buyer beware, the default rule. <strong>Implied conditions</strong> as to title (Section 14), merchantable quality, fitness for purpose. <strong>Nemo dat quod non habet</strong> (Section 27) — you cannot transfer title you do not have. <strong>Passing of property</strong> (Sections 18–26) — determines risk allocation between buyer and seller. These are consistently tested in UGC NET, judiciary, and bar exams.</p>`
+  },
+  ibc: {
+    tag: "Commercial Law",
+    title: "Insolvency and Bankruptcy Code, 2016",
+    meta: ["📅 In force: December 1, 2016 (in phases)", "📖 255 Sections", "🔖 Consolidated insolvency law"],
+    preamble: `"An Act to consolidate and amend the laws relating to reorganisation and insolvency resolution of corporate persons, partnership firms and individuals in a time-bound manner for maximisation of value of assets of such persons, to promote entrepreneurship, availability of credit and balance the interests of all the stakeholders..."`,
+    overview: `<h3>What is it, and why was it made?</h3>
+<p>Before IBC, 2016, insolvency proceedings in India were scattered across multiple statutes — SICA, Companies Act, Presidency Towns Insolvency Act, and Provincial Insolvency Act — leading to delays, forum shopping, and poor recovery rates. IBC consolidated all of this into a single, time-bound framework.</p>
+<p>IBC introduced the Corporate Insolvency Resolution Process (CIRP) — a maximum 180 days (extendable to 330) for resolution. The National Company Law Tribunal (NCLT) is the adjudicating authority for corporates.</p>
+<h3>Key stakeholders and concepts</h3>
+<p><strong>Financial Creditor</strong> (Section 5(7)) — creditors with a financial debt (banks, debenture holders). <strong>Operational Creditor</strong> (Section 5(20)) — employees, suppliers, service providers. <strong>IRP/RP</strong> — Insolvency Resolution Professional who manages the debtor during CIRP. <strong>CoC</strong> — Committee of Creditors (financial creditors only) that approves the resolution plan by 66% vote. Landmark: <em>Swiss Ribbons v. Union of India</em> (2019) upheld the constitutionality of IBC.</p>`
+  },
+  partnership: {
+    tag: "Commercial Law",
+    title: "Indian Partnership Act, 1932",
+    meta: ["📅 In force: October 1, 1932", "📖 74 Sections", "🔖 Unregistered firms governed by this Act"],
+    preamble: `"An Act to define and amend the law relating to partnership... Partnership is defined as the relation between persons who have agreed to share the profits of a business carried on by all or any of them acting for all."`,
+    overview: `<h3>What is it, and why was it made?</h3>
+<p>The Indian Partnership Act, 1932 defines and governs partnerships in India. Before this Act, the law of partnership was embedded in the Indian Contract Act, 1872. The 1932 Act carved it out as a dedicated statute, following closely the English Partnership Act, 1890.</p>
+<p>A partnership under Section 4 requires: (1) an agreement, (2) to carry on business, (3) for profit, (4) mutual agency. Registration under the Act is optional but unregistered firms cannot sue third parties (Section 69).</p>
+<h3>Key concepts for exams</h3>
+<p><strong>Mutual agency</strong> (Section 18) — the cornerstone principle. Every partner is an agent of the firm and fellow partners for acts done in the ordinary course of business. <strong>Implied authority</strong> (Section 19) vs. <strong>express authority</strong>. <strong>Incoming partner</strong> (Section 31) — not liable for past debts unless agreed. <strong>Retiring partner</strong> (Section 32) — remains liable until public notice. <strong>Dissolution</strong> (Sections 40–55) — by agreement, insolvency, court order, or by notice.</p>`
+  },
+  dpdp: {
+    tag: "Technology Law",
+    title: "Digital Personal Data Protection Act, 2023",
+    meta: ["📅 Royal assent: August 11, 2023", "📖 44 Sections", "🔖 India's first dedicated data protection law"],
+    preamble: `"An Act to provide for the processing of digital personal data in a manner that recognises both the right of individuals to protect their personal data and the need to process such personal data for lawful purposes..."`,
+    overview: `<h3>What is it, and why was it made?</h3>
+<p>The Digital Personal Data Protection Act, 2023 is India's first dedicated data protection legislation, enacted following the Supreme Court's recognition of privacy as a fundamental right in <em>Justice K.S. Puttaswamy v. Union of India</em> (2017). The Act was passed after nearly a decade of deliberation and multiple draft versions (including the PDP Bill 2019 and the Data Protection Bill 2021).</p>
+<p>The Act adopts a consent-based framework for processing personal data, with provisions for legitimate uses (Section 7) that do not require consent — including State functions, compliance with legal obligations, and medical emergencies.</p>
+<h3>Key concepts</h3>
+<p><strong>Data Principal</strong> — the individual to whom personal data relates. <strong>Data Fiduciary</strong> — any entity that determines the purpose and means of processing. <strong>Significant Data Fiduciary (SDF)</strong> — designated by the Central Government based on volume and sensitivity of data. <strong>Data Protection Board</strong> — the adjudicating authority under the Act (not a court). Penalties under Section 33 go up to ₹250 crore per breach. Rules under the Act are yet to be notified as of 2024.</p>`
+  }
+};
+
+function toggleSidebar() {
+  const sb = document.getElementById('sidebar');
+  const ov = document.getElementById('overlay');
+  sb.classList.toggle('open');
+  ov.classList.toggle('open');
+}
+
+function openLaw(key) {
+  const data = lawData[key];
+  if (!data) {
+    alert('This section is coming soon! Content is being reviewed before publishing.');
+    toggleSidebar();
+    return;
+  }
+  document.getElementById('content-tag').textContent = data.tag;
+  document.getElementById('content-title').textContent = data.title;
+  const metaEl = document.getElementById('content-meta');
+  metaEl.innerHTML = data.meta.map(m => `<span>${m}</span>`).join('');
+  document.getElementById('preamble-text').textContent = data.preamble;
+  document.getElementById('overview-content').innerHTML = data.overview;
+  document.getElementById('content-page').classList.add('open');
+  document.getElementById('content-page').scrollTop = 0;
+  switchTab('overview', document.querySelector('.tab-btn'));
+  if (document.getElementById('sidebar').classList.contains('open')) toggleSidebar();
+}
+
+function closeLaw() {
+  document.getElementById('content-page').classList.remove('open');
+}
+
+function switchTab(name, btn) {
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  btn.classList.add('active');
+}
+
+function checkAnswer(el, cardId, isCorrect) {
+  const card = document.getElementById(cardId);
+  if (card.querySelector('.correct')) return;
+  if (isCorrect) {
+    el.classList.add('correct');
+  } else {
+    el.classList.add('wrong');
+    card.querySelectorAll('.mcq-option').forEach(opt => {
+      if (!opt.classList.contains('wrong')) opt.classList.add('correct');
+    });
+  }
+}
+
+function showSection(name) {}
+</script>
+</body>
+</html>
